@@ -10,6 +10,7 @@
   align-items: center;
   inset: 0;
   z-index: 5;
+  overflow: hidden;
 }
 
 .item {
@@ -47,11 +48,6 @@ img.item {
   transform: translateY(-50%);
 }
 
-@keyframes slideToLeft {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(-191.75px);
-  }
+.animation {
+  transition: margin linear 0.5s;
 }
