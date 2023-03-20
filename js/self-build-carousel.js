@@ -118,13 +118,22 @@ function CarouselLogicVer1(options) {
 
 // Improvement: make an animation by adding margin-left to the first item
 function Carousel(options) {
+    // ==============
+    // ==== DOM =====
+    // ==============
+
+    const carousel = document.querySelector(options.selector);
+    const itemsList = carousel.querySelectorAll('.item');
+
     // =================
     // ==== States =====
     // =================
 
+    const amount = options.responsive[0];
+    const width = 100 / amount;
+    const count = itemsList.length;
+    const duration = 500;
     let index = 1;
-    let amountItems = options.responsive[0];
-    let firstChild;
 
     // =====================
     // ==== Utilities ======
@@ -147,7 +156,7 @@ function Carousel(options) {
         parent.appendChild(wrapper);
 
         return wrapper;
-    }
+    };
 
     function createEl(htmlString) {
         const div = document.createElement('div');
@@ -155,12 +164,45 @@ function Carousel(options) {
         return div.childNodes[0];
     }
 
-    // ==============
-    // ==== DOM =====
-    // ==============
+    function moveCarousel() {
+        before.style.marginLeft = -width * index + '%';
+        if (index > count) {
+            index = 1;
+            toggleAnimation();
+        } else if (index == 0) {
+            index = count;
+            toggleAnimation();
+        }
+    }
 
-    const carousel = document.querySelector(options.selector);
-    const itemsList = carousel.querySelectorAll('.item');
+    async function toggleAnimation() {
+        await delay(duration);
+        before.classList.remove('animation');
+        before.style.marginLeft = -width * index + '%';
+        await delay(duration / 2);
+        before.classList.add('animation');
+    }
+
+    function delay(time) {
+        return new Promise((resolve) => {
+            setTimeout(resolve, time);
+        });
+    }
+
+    function throttling(fn, delay) {
+        let toThrottle = false;
+
+        return () => {
+            if (!toThrottle) {
+                toThrottle = true;
+                fn();
+                setTimeout(() => {
+                    toThrottle = false;
+                }, delay);
+            }
+        };
+    }
+
 
     // =====================
     // ==== Preprocess =====
@@ -168,7 +210,7 @@ function Carousel(options) {
 
     // Specify the width of an image based on responsive
     itemsList.forEach((item) => {
-        item.style.width = `${100 / amountItems}%`;
+        item.style.width = width + '%';
     });
 
     // Wrap items in a container
@@ -196,13 +238,13 @@ function Carousel(options) {
     // ==== Handle events ====
     // =======================
 
-    leftBtn.onclick = () => {
+    leftBtn.onclick = throttling(function () {
         --index;
-        before.style.marginLeft = -before.offsetWidth * index + 'px';
-    };
+        moveCarousel();
+    }, duration * 1.5);
 
-    rightBtn.onclick = () => {
+    rightBtn.onclick = throttling(function () {
         ++index;
-        before.style.marginLeft = -before.offsetWidth * index + 'px';
-    };
+        moveCarousel();
+    }, duration * 1.5);
 }
