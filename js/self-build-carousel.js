@@ -129,7 +129,7 @@ function Carousel(options) {
     // ==== States =====
     // =================
 
-    const amount = options.responsive[0];
+    const amount = options.responsive ? options.responsive[0] : 1;
     const width = 100 / amount;
     const count = itemsList.length;
     const duration = 500;
@@ -179,8 +179,22 @@ function Carousel(options) {
         await delay(duration);
         before.classList.remove('animation');
         before.style.marginLeft = -width * index + '%';
-        await delay(duration / 2);
+        await delay(duration * 0.2);
         before.classList.add('animation');
+    }
+
+    function showActive() {
+        dot1.className = 'dot';
+        dot2.className = 'dot';
+        dot3.className = 'dot';
+
+        if (index > 0 && index < count / 2) {
+            dot1.classList.add('active');
+        } else if (index >= count / 2 && index < count) {
+            dot2.classList.add('active');
+        } else if (index >= count) {
+            dot3.classList.add('active');
+        }
     }
 
     function delay(time) {
@@ -203,7 +217,6 @@ function Carousel(options) {
         };
     }
 
-
     // =====================
     // ==== Preprocess =====
     // =====================
@@ -224,15 +237,22 @@ function Carousel(options) {
     itemsContainer.appendChild(first.cloneNode(true));
 
     const before = document.querySelector('.item:first-child');
-    before.style.marginLeft = -before.offsetWidth * index + 'px';
+    before.style.marginLeft = -width * index + '%';
     before.classList.add('animation');
 
     // Create 2 navigation buttons
-    const leftBtn = createEl(`<button class="left-btn">Left</button>`);
-    const rightBtn = createEl(`<button class="right-btn">Right</button>`);
+    const leftBtn = createEl(`<button class="left-btn"></button>`);
+    const rightBtn = createEl(`<button class="right-btn"></button>`);
 
     carousel.insertBefore(leftBtn, itemsContainer);
     carousel.appendChild(rightBtn);
+
+    // Create navigation buttons
+    const dot1 = createEl('<div class="dot active"></div>');
+    const dot2 = createEl('<div class="dot"></div>');
+    const dot3 = createEl('<div class="dot"></div>');
+    const dots = wrapperEls([dot1, dot2, dot3], 'div', 'dots');
+    carousel.appendChild(dots);
 
     // =======================
     // ==== Handle events ====
@@ -241,10 +261,30 @@ function Carousel(options) {
     leftBtn.onclick = throttling(function () {
         --index;
         moveCarousel();
-    }, duration * 1.5);
+        showActive();
+    }, duration * 1.2);
 
     rightBtn.onclick = throttling(function () {
         ++index;
         moveCarousel();
-    }, duration * 1.5);
+        showActive();
+    }, duration * 1.2);
+
+    dot1.onclick = () => {
+        index = 1;
+        moveCarousel();
+        showActive();
+    };
+
+    dot2.onclick = () => {
+        index = count / 2;
+        moveCarousel();
+        showActive();
+    };
+
+    dot3.onclick = () => {
+        index = count;
+        moveCarousel();
+        showActive();
+    };
 }

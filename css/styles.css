@@ -20,3 +20,10 @@ body {
   justify-content: center;
   align-items: center;
 }
+
+div.item {
+  font-size: 69px;
+  text-align: center;
+  background-color: #fff;
+  border: 1px solid black;
+}
