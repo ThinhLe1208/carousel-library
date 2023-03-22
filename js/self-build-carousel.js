@@ -129,10 +129,12 @@ function Carousel(options) {
     // ==== States =====
     // =================
 
-    const amount = options.responsive ? options.responsive[0] : 1;
+    const amount = options.responsive[0] ?? 1;
     const width = 100 / amount;
     const count = itemsList.length;
     const duration = 500;
+    const loop = options.loop ?? true;
+    const pag = count < 2 ? false : options.pag ?? true;
     let index = 1;
 
     // =====================
@@ -147,7 +149,7 @@ function Carousel(options) {
         if (els.length) {
             parent = els[0].parentNode;
             els.forEach((ele) => {
-                wrapper.appendChild(ele);
+                ele && wrapper.appendChild(ele);
             });
         } else {
             parent = els.parentNode;
@@ -248,11 +250,17 @@ function Carousel(options) {
     carousel.appendChild(rightBtn);
 
     // Create navigation buttons
-    const dot1 = createEl('<div class="dot active"></div>');
-    const dot2 = createEl('<div class="dot"></div>');
-    const dot3 = createEl('<div class="dot"></div>');
-    const dots = wrapperEls([dot1, dot2, dot3], 'div', 'dots');
-    carousel.appendChild(dots);
+    if (pag) {
+        var dot1 = createEl('<div class="dot active"></div>');
+        var dot2 = createEl('<div class="dot"></div>');
+
+        if (count > 2) {
+            var dot3 = createEl('<div class="dot"></div>');
+        }
+
+        var dots = wrapperEls([dot1, dot2, dot3], 'div', 'dots');
+        carousel.appendChild(dots);
+    }
 
     // =======================
     // ==== Handle events ====
@@ -261,30 +269,34 @@ function Carousel(options) {
     leftBtn.onclick = throttling(function () {
         --index;
         moveCarousel();
-        showActive();
+        pag && showActive();
     }, duration * 1.2);
 
     rightBtn.onclick = throttling(function () {
         ++index;
         moveCarousel();
-        showActive();
+        pag && showActive();
     }, duration * 1.2);
 
-    dot1.onclick = () => {
-        index = 1;
-        moveCarousel();
-        showActive();
-    };
+    if (pag) {
+        dot1.onclick = () => {
+            index = 1;
+            moveCarousel();
+            showActive();
+        };
 
-    dot2.onclick = () => {
-        index = count / 2;
-        moveCarousel();
-        showActive();
-    };
+        dot2.onclick = () => {
+            index = count / 2;
+            moveCarousel();
+            showActive();
+        };
 
-    dot3.onclick = () => {
-        index = count;
-        moveCarousel();
-        showActive();
-    };
+        if (dot3) {
+            dot3.onclick = () => {
+                index = count;
+                moveCarousel();
+                showActive();
+            };
+        }
+    }
 }

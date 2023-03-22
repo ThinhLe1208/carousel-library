@@ -51,7 +51,7 @@ img.item {
   bottom: 0;
   left: 50%;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   width: calc(var(--height) * 4);
   height: var(--height);
   transform: translateX(-50%);
@@ -66,6 +66,10 @@ img.item {
   border: 1px solid transparent;
   border-radius: 50%;
   cursor: pointer;
+}
+
+.dot + .dot {
+  margin-left: 4px;
 }
 
 .dot.active {
