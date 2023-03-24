@@ -129,13 +129,17 @@ function Carousel(options) {
     // ==== States =====
     // =================
 
+    const count = itemsList.length;
+    const loop = options.loop ?? true;
+    const pag = count <= 2 ? false : options.pag ?? true;
     const amount = options.responsive[0] ?? 1;
     const width = 100 / amount;
-    const count = itemsList.length;
     const duration = 500;
-    const loop = options.loop ?? true;
-    const pag = count < 2 ? false : options.pag ?? true;
     let index = 1;
+    let firstDot = 1;
+    let secondDot = Math.ceil(count * 2 / 5);
+    let thirdDot = Math.ceil(count * 4 / 5);
+
 
     // =====================
     // ==== Utilities ======
@@ -188,13 +192,16 @@ function Carousel(options) {
     function showActive() {
         dot1.className = 'dot';
         dot2.className = 'dot';
-        dot3.className = 'dot';
 
-        if (index > 0 && index < count / 2) {
+        if (count > 2) {
+            dot3.className = 'dot';
+        }
+
+        if (firstDot <= index && index < secondDot) {
             dot1.classList.add('active');
-        } else if (index >= count / 2 && index < count) {
+        } else if (secondDot <= index && index < thirdDot) {
             dot2.classList.add('active');
-        } else if (index >= count) {
+        } else if (count > 2 && thirdDot <= index) {
             dot3.classList.add('active');
         }
     }
@@ -280,20 +287,20 @@ function Carousel(options) {
 
     if (pag) {
         dot1.onclick = () => {
-            index = 1;
+            index = firstDot;
             moveCarousel();
             showActive();
         };
 
         dot2.onclick = () => {
-            index = count / 2;
+            index = secondDot;
             moveCarousel();
             showActive();
         };
 
         if (dot3) {
             dot3.onclick = () => {
-                index = count;
+                index = thirdDot;
                 moveCarousel();
                 showActive();
             };
